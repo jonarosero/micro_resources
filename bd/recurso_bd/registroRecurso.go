@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/ascendere/resources/bd"
-	recursomodels "github.com/ascendere/resources/models/recursos_models"
+	recursomodels "github.com/ascendere/resources/models/recurso_models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 

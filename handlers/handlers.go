@@ -15,7 +15,7 @@ func Manejadores() {
 	router := mux.NewRouter()
 
 	//Llamada al CRUD de Recursos
-	router.HandleFunc("/registroRecurso", middlew.ChequeoBD(recursorouters.RegistroRecurso)).Methods("POST")
+	router.HandleFunc("/registroRecurso", middlew.ChequeoBD(middlew.ValidoJWT(recursorouters.RegistroRecurso))).Methods("POST")
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {

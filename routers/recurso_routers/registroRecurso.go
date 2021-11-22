@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	recursobd "github.com/ascendere/resources/bd/recurso_bd"
-	recursomodels "github.com/ascendere/resources/models/recursos_models"
+	recursomodels "github.com/ascendere/resources/models/recurso_models"
 )
 
 func RegistroRecurso(w http.ResponseWriter, r *http.Request){
