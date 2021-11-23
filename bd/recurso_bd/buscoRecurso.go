@@ -7,9 +7,10 @@ import (
 	"github.com/ascendere/resources/bd"
 	recursomodels "github.com/ascendere/resources/models/recurso_models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func BuscoRecurso(nombre string) (recursomodels.DevuelvoRecurso, error) {
+func BuscoRecurso(id string) (recursomodels.DevuelvoRecurso, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
@@ -22,7 +23,9 @@ func BuscoRecurso(nombre string) (recursomodels.DevuelvoRecurso, error) {
 
 	var result recursomodels.DevuelvoRecurso
 
-	errRecurso := col.FindOne(ctx, bson.M{"nombreRecurso": bson.M{"$regex": `(?i)` + nombre}}).Decode(&resultadoRecurso)
+	objID, _ := primitive.ObjectIDFromHex(id)
+
+	errRecurso := col.FindOne(ctx, bson.M{"_id":objID}).Decode(&resultadoRecurso)
 	if errRecurso != nil {
 		return result, errRecurso
 	}
