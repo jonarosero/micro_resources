@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
+func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
@@ -24,14 +24,14 @@ func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
 
 	cur, err := col.Find(ctx, query)
 	if err != nil {
-		return results, false
+		return results, err
 	}
 
 	for cur.Next(ctx) {
 		var s recursomodels.Recurso
 		err := cur.Decode(&s)
 		if err != nil {
-			return results, false
+			return results, err
 		}
 		resultadoRecurso = append(resultadoRecurso, &s)
 	}
@@ -43,7 +43,7 @@ func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
 		errTipo := colTipo.FindOne(ctx, bson.M{"_id": recurso.TipoID}).Decode(&tipo)
 
 		if errTipo != nil {
-			return results, false
+			return results, err
 		}
 
 		var aux recursomodels.DevuelvoRecurso
@@ -61,7 +61,7 @@ func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
 	}
 
 	if err != nil {
-		return results, false
+		return results, err
 	}
-	return results, true
+	return results, err
 }
