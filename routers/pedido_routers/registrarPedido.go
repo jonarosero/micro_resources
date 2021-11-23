@@ -2,7 +2,7 @@ package pedidorouters
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -35,7 +35,7 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	t.FechaPedido = time.Now()
-	fmt.Sprintln(t)
+	log.Println(t)
 
 	for _, recurso := range t.Recurso { 
 		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
