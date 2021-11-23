@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomodels.RecursoPedido, bool, string) {
+func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomodels.RecursoPedido, error, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -26,19 +26,19 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomo
 
 	error := col.FindOne(ctx, condicion).Decode(&resultado)
 	if error != nil {
-		return resultadoRecursoPedido, false, "No se encuentra el recurso"
+		return resultadoRecursoPedido, error, "No se encuentra el recurso"
 	}
 
 	if resultado.CantidadDisponible == 0 {
-		return resultadoRecursoPedido, false, "El recurso no se encuentra disponible"
+		return resultadoRecursoPedido, error, "El recurso no se encuentra disponible"
 	}
 
 	if cantidadPedida > resultado.CantidadDisponible {
-		return resultadoRecursoPedido, false, "No se dispone de tantos recursos"
+		return resultadoRecursoPedido, error, "No se dispone de tantos recursos"
 	}
 
 	if cantidadPedida > resultado.CantidadExistente {
-		return resultadoRecursoPedido, false, "No existen tantos recursos"
+		return resultadoRecursoPedido, error, "No existen tantos recursos"
 	}
 
 	if cantidadPedida < resultado.CantidadDisponible && cantidadPedida > 0 {
@@ -56,7 +56,7 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomo
 		_, err := col.UpdateOne(ctx, filtro, updtString)
 
 		if err != nil {
-			return resultadoRecursoPedido, false, err.Error()
+			return resultadoRecursoPedido, error, err.Error()
 		}
 
 		resultadoRecursoPedido.RecursoID = resultado.ID
@@ -65,5 +65,5 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomo
 	
 	}
 
-	return resultadoRecursoPedido, true, id.String()
+	return resultadoRecursoPedido, error, id.String()
 }

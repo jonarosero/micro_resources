@@ -35,10 +35,10 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, recurso := range t.Recurso { 
-		recursoEncontrado, disponible, err := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
+		recursoEncontrado, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
 
-		if !disponible {
-			http.Error(w, err, http.StatusBadRequest)
+		if err != nil {
+			http.Error(w, mensaje + " " + err.Error(), http.StatusBadRequest)
 		}
 		recurso.NombreRecurso = recursoEncontrado.NombreRecurso
 	}
