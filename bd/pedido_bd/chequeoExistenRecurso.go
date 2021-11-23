@@ -25,6 +25,8 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 
 	error := col.FindOne(ctx, bson.M{"_id":objID}).Decode(&resultado)
 
+	nombre = resultado.NombreRecurso
+
 	if error == nil {
 		return nombre, error, "No se encuentra el recurso: " + recursoPedido.RecursoID
 	}
@@ -41,7 +43,7 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 		return nombre, error, "No existen tantos recursos"
 	}
 
-	if recursoPedido.CantidadPedida < resultado.CantidadDisponible && recursoPedido.CantidadPedida > 0 {
+	if recursoPedido.CantidadPedida < resultado.CantidadDisponible {
 		resultado.CantidadDisponible = resultado.CantidadDisponible - recursoPedido.CantidadPedida
 
 		registro := make(map[string]interface{})
@@ -58,8 +60,6 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 		if err != nil {
 			return "", error, err.Error()
 		}
-
-		nombre = resultado.NombreRecurso
 	
 	}
 

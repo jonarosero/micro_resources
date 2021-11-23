@@ -42,7 +42,11 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		log.Println(recurso.RecursoID)
 	}
 
-	for _, recurso := range t.Recurso { 
+	for _, recurso := range t.Recurso {
+		if recurso.CantidadPedida < 0 {
+			http.Error(w, "La cantidad pedida no puede ser negativa", 400)
+			return
+		}
 		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso)
 
 		if err != nil {
