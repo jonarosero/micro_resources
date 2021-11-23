@@ -2,6 +2,7 @@ package pedidorouters
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -50,6 +51,8 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ocurrio un error al intentar registrar el pedido: "+ status + " "+err.Error(), 400)
 		return
 	}
+
+	fmt.Sprintln(t)
 
 	w.WriteHeader(http.StatusCreated)
 }
