@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func BuscoRecurso(nombre string) (recursomodels.DevuelvoRecurso, error) {
+func BuscoRecurso(nombre string) ([]recursomodels.DevuelvoRecurso, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
@@ -29,7 +29,7 @@ func BuscoRecurso(nombre string) (recursomodels.DevuelvoRecurso, error) {
 
 	cursor, err := col.Aggregate(ctx, condiciones)
 
-	var result recursomodels.DevuelvoRecurso
+	var result []recursomodels.DevuelvoRecurso
 
 	err = cursor.All(ctx, &result)
 
