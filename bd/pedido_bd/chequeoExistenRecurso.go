@@ -39,6 +39,7 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	calc := resultado.CantidadDisponible - recursoPedido.CantidadPedida
 
 	resultado.CantidadDisponible = calc
+	resultado.CantidadExistente = 0
 
 	_,errorActu := recursobd.ActualizoRecurso(resultado)
 
