@@ -31,9 +31,9 @@ func ActualizoRecurso(u recursomodels.Recurso) (bool, error) {
 		registro["nombreRecurso"] = u.NombreRecurso
 	}
 
-	if u.CantidadDisponible > 0 {
-		registro["cantidadDisponible"] = u.CantidadDisponible
-	}
+	
+	registro["cantidadDisponible"] = u.CantidadDisponible
+	
 	
 	if resultado.CantidadExistente + u.CantidadExistente < 0 {
 		return false, nil
