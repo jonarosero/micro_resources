@@ -33,15 +33,10 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	}
 
 	if resultado.CantidadDisponible == 0 {
-		return "error cantidad disponible", error, "El recurso no se encuentra disponible"
+		return "", error, "El recurso no se encuentra disponible"
 	}
 
 	calc := resultado.CantidadDisponible - recursoPedido.CantidadPedida
-
-	if calc < 0 {
-		return "mucho pide el cuerpo", error, "No existen tantos recursos"
-
-	}
 
 	resultado.CantidadDisponible = calc
 

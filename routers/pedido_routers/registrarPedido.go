@@ -36,8 +36,9 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var nombres []string
+
 	for _, recurso := range t.Recurso {
-		recurso.NombreRecurso = ""
 		if recurso.CantidadPedida < 0 {
 			http.Error(w, "La cantidad pedida no puede ser negativa", 400)
 			return
@@ -48,9 +49,13 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, mensaje + " " + err.Error() + "" + recurso.RecursoID, http.StatusBadRequest)
 			return
 		}
-		recurso.NombreRecurso = nombreRecurso
+		nombres = append(nombres, nombreRecurso)
 
 		log.Println(recurso.NombreRecurso)
+	}
+
+	for i := 0; i < len(t.Recurso); i++ {
+		t.Recurso[i].NombreRecurso = nombres[i]
 	}
 
 	log.Println(t)
