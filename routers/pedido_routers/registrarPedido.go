@@ -37,6 +37,10 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 	t.FechaPedido = time.Now()
 	log.Println(t)
 
+	for _, recurso := range t.Recurso {
+		log.Println(recurso.RecursoID)
+	}
+
 	for _, recurso := range t.Recurso { 
 		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
 
