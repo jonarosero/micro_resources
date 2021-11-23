@@ -34,6 +34,8 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Informe de Pedido requerido ", 400)
 		return
 	}
+	t.FechaPedido = time.Now()
+	fmt.Sprintln(t)
 
 	for _, recurso := range t.Recurso { 
 		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
@@ -44,15 +46,13 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		recurso.NombreRecurso = nombreRecurso
 	}
 
-	t.FechaPedido = time.Now()
+	
 
 	status, err := pedidobd.RegistroPedido(t)
 	if err != nil {
 		http.Error(w, "Ocurrio un error al intentar registrar el pedido: "+ status + " "+err.Error(), 400)
 		return
 	}
-
-	fmt.Sprintln(t)
 
 	w.WriteHeader(http.StatusCreated)
 }
