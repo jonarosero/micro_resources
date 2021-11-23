@@ -18,20 +18,44 @@ func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
 
 	var results []*recursomodels.DevuelvoRecurso
 
-	condiciones := make([]bson.M,0)
+	var resultadoRecurso []*recursomodels.Recurso
 
-	condiciones = append(condiciones, bson.M{
-		"lookup": bson.M{
-			"from":         "tipoRecurso",
-			"localField":   "tipoid",
-			"foreignField": "_id",
-			"as":           "tipo",
-		}})
-	condiciones = append(condiciones,  bson.M{"$unwind": "$asignatura"})
+	query := bson.M{}
 
-	cursor, err := col.Aggregate(ctx, condiciones)
+	cur, err := col.Find(ctx, query)
+	if err != nil {
+		return results, false
+	}
 
-	err = cursor.All(ctx, &results)
+	for cur.Next(ctx) {
+		var s recursomodels.Recurso
+		err := cur.Decode(&s)
+		if err != nil {
+			return results, false
+		}
+			resultadoRecurso = append(resultadoRecurso, &s)
+	}
+
+	for _, recurso := range resultadoRecurso {
+		colTipo := db.Collection("tipoRecurso")
+		var tipo recursomodels.TipoRecurso
+
+		err := colTipo.FindOne(ctx,bson.M{"_id":recurso.ID}).Decode(&tipo)
+
+		if err !=nil {
+			return results, false
+		}
+
+		aux := recursomodels.DevuelvoRecurso{
+			ID: recurso.ID,
+			NombreRecurso: recurso.NombreRecurso,
+			CantidadExistente: recurso.CantidadExistente,
+			CantidadDisponible: recurso.CantidadDisponible,
+			TipoRecurso: tipo,
+		}
+
+		results = append(results, &aux)
+	}
 
 	if err != nil{
 		return results, false
