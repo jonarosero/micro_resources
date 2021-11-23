@@ -5,13 +5,12 @@ import (
 	"time"
 
 	"github.com/ascendere/resources/bd"
-	pedidomodels "github.com/ascendere/resources/models/pedido_models"
 	recursomodels "github.com/ascendere/resources/models/recurso_models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomodels.RecursoPedido, error, string) {
+func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (string, error, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -19,26 +18,24 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomo
 	col := db.Collection("recurso")
 
 	var resultado recursomodels.Recurso
+	var nombre string
 
-	var resultadoRecursoPedido pedidomodels.RecursoPedido
+	error := col.FindOne(ctx, bson.M{"_id":id}).Decode(&resultado)
 
-	condicion := bson.M{"_id": id}
-
-	error := col.FindOne(ctx, condicion).Decode(&resultado)
 	if error != nil {
-		return resultadoRecursoPedido, error, "No se encuentra el recurso"
+		return nombre, error, "No se encuentra el recurso"
 	}
 
 	if resultado.CantidadDisponible == 0 {
-		return resultadoRecursoPedido, error, "El recurso no se encuentra disponible"
+		return nombre, error, "El recurso no se encuentra disponible"
 	}
 
 	if cantidadPedida > resultado.CantidadDisponible {
-		return resultadoRecursoPedido, error, "No se dispone de tantos recursos"
+		return nombre, error, "No se dispone de tantos recursos"
 	}
 
 	if cantidadPedida > resultado.CantidadExistente {
-		return resultadoRecursoPedido, error, "No existen tantos recursos"
+		return nombre, error, "No existen tantos recursos"
 	}
 
 	if cantidadPedida < resultado.CantidadDisponible && cantidadPedida > 0 {
@@ -56,14 +53,12 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (pedidomo
 		_, err := col.UpdateOne(ctx, filtro, updtString)
 
 		if err != nil {
-			return resultadoRecursoPedido, error, err.Error()
+			return "", error, err.Error()
 		}
 
-		resultadoRecursoPedido.RecursoID = resultado.ID
-		resultadoRecursoPedido.NombreRecurso = resultado.NombreRecurso
-		resultadoRecursoPedido.CantidadPedida = cantidadPedida
+		nombre = resultado.NombreRecurso
 	
 	}
 
-	return resultadoRecursoPedido, error, id.String()
+	return nombre, error, id.String()
 }

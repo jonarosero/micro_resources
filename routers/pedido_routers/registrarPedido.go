@@ -36,12 +36,12 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, recurso := range t.Recurso { 
-		recursoEncontrado, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
+		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
 
 		if err != nil {
 			http.Error(w, mensaje + " " + err.Error() + "" + recurso.RecursoID.String(), http.StatusBadRequest)
 		}
-		recurso.NombreRecurso = recursoEncontrado.NombreRecurso
+		recurso.NombreRecurso = nombreRecurso
 	}
 
 	t.FechaPedido = time.Now()
