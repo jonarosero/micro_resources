@@ -22,6 +22,7 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 	t.Usuario.UsuarioID = objID
 	t.Usuario.Email = routers.Email
 	t.Usuario.Nombre = routers.Nombre
+	t.FechaPedido = time.Now()
 	t.TiempoPedido = t.FechaPedido.Add(time.Hour*120)
 	t.Mensaje = "A TIEMPO PARA ENTREGAR"
 
@@ -34,7 +35,7 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Informe de Pedido requerido ", 400)
 		return
 	}
-	t.FechaPedido = time.Now()
+
 	log.Println(t)
 
 	for _, recurso := range t.Recurso {
@@ -42,7 +43,7 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, recurso := range t.Recurso { 
-		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso.RecursoID, recurso.CantidadPedida)
+		nombreRecurso, err, mensaje := pedidobd.ChequeoExistenRecursos(recurso)
 
 		if err != nil {
 			http.Error(w, mensaje + " " + err.Error() + "" + recurso.RecursoID.String(), http.StatusBadRequest)

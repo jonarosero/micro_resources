@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/ascendere/resources/bd"
+	pedidomodels "github.com/ascendere/resources/models/pedido_models"
 	recursomodels "github.com/ascendere/resources/models/recurso_models"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (string, error, string) {
+func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, error, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -20,7 +20,7 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (string, 
 	var resultado recursomodels.Recurso
 	var nombre string
 
-	error := col.FindOne(ctx, bson.M{"_id":id}).Decode(&resultado)
+	error := col.FindOne(ctx, bson.M{"_id":recursoPedido.RecursoID}).Decode(&resultado)
 
 	if error == nil {
 		return nombre, error, "No se encuentra el recurso"
@@ -30,16 +30,16 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (string, 
 		return nombre, error, "El recurso no se encuentra disponible"
 	}
 
-	if cantidadPedida > resultado.CantidadDisponible {
+	if recursoPedido.CantidadPedida > resultado.CantidadDisponible {
 		return nombre, error, "No se dispone de tantos recursos"
 	}
 
-	if cantidadPedida > resultado.CantidadExistente {
+	if recursoPedido.CantidadPedida > resultado.CantidadExistente {
 		return nombre, error, "No existen tantos recursos"
 	}
 
-	if cantidadPedida < resultado.CantidadDisponible && cantidadPedida > 0 {
-		resultado.CantidadDisponible = resultado.CantidadDisponible - cantidadPedida
+	if recursoPedido.CantidadPedida < resultado.CantidadDisponible && recursoPedido.CantidadPedida > 0 {
+		resultado.CantidadDisponible = resultado.CantidadDisponible - recursoPedido.CantidadPedida
 
 		registro := make(map[string]interface{})
 
@@ -60,5 +60,5 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (string, 
 	
 	}
 
-	return nombre, error, id.String()
+	return nombre, error, recursoPedido.RecursoID.String()
 }
