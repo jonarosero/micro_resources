@@ -8,22 +8,25 @@ import (
 	pedidomodels "github.com/ascendere/resources/models/pedido_models"
 	recursomodels "github.com/ascendere/resources/models/recurso_models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, error, string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
-	db := bd.MongoCN.Database("Recurso")
+	db := bd.MongoCN.Database("Recursos")
 	col := db.Collection("recurso")
 
 	var resultado recursomodels.Recurso
 	var nombre string
 
-	error := col.FindOne(ctx, bson.M{"_id":recursoPedido.RecursoID}).Decode(&resultado)
+	objID,_ := primitive.ObjectIDFromHex("619bab8151954536d1cc4b64")
+
+	error := col.FindOne(ctx, bson.M{"_id":objID}).Decode(&resultado)
 
 	if error == nil {
-		return nombre, error, "No se encuentra el recurso"
+		return nombre, error, "No se encuentra el recurso: " + recursoPedido.RecursoID.String()
 	}
 
 	if resultado.CantidadDisponible == 0 {
