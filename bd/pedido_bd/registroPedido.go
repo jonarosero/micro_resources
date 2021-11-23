@@ -24,7 +24,8 @@ func RegistroPedido(r pedidomodels.Pedido) (string, bool, error) {
 		InformePedido:   r.InformePedido,
 		Estado:          true,
 		Recurso:         r.Recurso,
-		Usuario: 		 r.Usuario,
+		Usuario:         r.Usuario,
+		TiempoPedido:    r.TiempoPedido,
 	}
 
 	if r.FechaDevolucion.Before(r.FechaPedido) {
