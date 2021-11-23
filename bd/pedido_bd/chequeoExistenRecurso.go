@@ -21,12 +21,12 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	var resultado recursomodels.Recurso
 	var nombre string
 
-	objID,_ := primitive.ObjectIDFromHex("619bab8151954536d1cc4b64")
+	objID,_ := primitive.ObjectIDFromHex(recursoPedido.RecursoID)
 
 	error := col.FindOne(ctx, bson.M{"_id":objID}).Decode(&resultado)
 
 	if error == nil {
-		return nombre, error, "No se encuentra el recurso: " + recursoPedido.RecursoID.String()
+		return nombre, error, "No se encuentra el recurso: " + recursoPedido.RecursoID
 	}
 
 	if resultado.CantidadDisponible == 0 {
@@ -63,5 +63,5 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	
 	}
 
-	return nombre, error, recursoPedido.RecursoID.String()
+	return nombre, error, recursoPedido.RecursoID
 }
