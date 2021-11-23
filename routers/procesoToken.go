@@ -11,6 +11,7 @@ import (
 var Email string
 var IDUsuario string
 var IDRol string
+var Nombre string
 
 func ProcesoToken(tk string) (*models.Claim, bool, string, error) {
 	miClave := []byte("MastersDelUniverso")
@@ -31,6 +32,7 @@ func ProcesoToken(tk string) (*models.Claim, bool, string, error) {
 		Email = claims.Email
 		IDUsuario = claims.ID.Hex()
 		IDRol = claims.RolId
+		Nombre = claims.Nombre + " " + claims.Apellidos
 
 		return claims, true, IDUsuario, nil
 	}
