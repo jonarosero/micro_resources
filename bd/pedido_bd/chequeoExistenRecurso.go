@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ascendere/resources/bd"
+	recursobd "github.com/ascendere/resources/bd/recurso_bd"
 	pedidomodels "github.com/ascendere/resources/models/pedido_models"
 	recursomodels "github.com/ascendere/resources/models/recurso_models"
 	"go.mongodb.org/mongo-driver/bson"
@@ -21,9 +22,9 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	var resultado recursomodels.Recurso
 	var nombre string
 
-	objID,_ := primitive.ObjectIDFromHex(recursoPedido.RecursoID)
+	objID, _ := primitive.ObjectIDFromHex(recursoPedido.RecursoID)
 
-	error := col.FindOne(ctx, bson.M{"_id":objID}).Decode(&resultado)
+	error := col.FindOne(ctx, bson.M{"_id": objID}).Decode(&resultado)
 
 	nombre = resultado.NombreRecurso
 
@@ -32,36 +33,28 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	}
 
 	if resultado.CantidadDisponible == 0 {
-		return nombre, error, "El recurso no se encuentra disponible"
+		return "", error, "El recurso no se encuentra disponible"
 	}
 
 	if recursoPedido.CantidadPedida > resultado.CantidadDisponible {
-		return nombre, error, "No se dispone de tantos recursos"
+		return "", error, "No se dispone de tantos recursos"
 	}
 
-	if recursoPedido.CantidadPedida > resultado.CantidadExistente {
-		return nombre, error, "No existen tantos recursos"
+	calc := resultado.CantidadDisponible - recursoPedido.CantidadPedida
+
+	if calc < 0 {
+		return "", error, "No existen tantos recursos"
+
 	}
 
-	if recursoPedido.CantidadPedida < resultado.CantidadDisponible {
-		resultado.CantidadDisponible = resultado.CantidadDisponible - recursoPedido.CantidadPedida
+	resultado.CantidadDisponible = calc
 
-		registro := make(map[string]interface{})
+	_,errorActu := recursobd.ActualizoRecurso(resultado)
 
-		registro["cantidadDisponible"] = resultado.CantidadDisponible
-		updtString := bson.M{
-			"$set": registro,
-		}
-	
-		filtro := bson.M{"_id": bson.M{"$eq": resultado.ID}}
-	
-		_, err := col.UpdateOne(ctx, filtro, updtString)
-
-		if err != nil {
-			return "", error, err.Error()
-		}
-	
+	if errorActu != nil {
+		return "", errorActu, "Hubo un error al actualizar los recursos"
 	}
+	
 
 	return nombre, error, recursoPedido.RecursoID
 }

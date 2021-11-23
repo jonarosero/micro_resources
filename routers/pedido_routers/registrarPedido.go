@@ -36,12 +36,6 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(t)
-
-	for _, recurso := range t.Recurso {
-		log.Println(recurso.RecursoID)
-	}
-
 	for _, recurso := range t.Recurso {
 		if recurso.CantidadPedida < 0 {
 			http.Error(w, "La cantidad pedida no puede ser negativa", 400)
@@ -54,7 +48,10 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		recurso.NombreRecurso = nombreRecurso
+
+		log.Println(recurso.NombreRecurso)
 	}
+
 
 	
 

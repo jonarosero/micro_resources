@@ -30,6 +30,11 @@ func ActualizoRecurso(u recursomodels.Recurso) (bool, error) {
 	if len(u.NombreRecurso) > 0{
 		registro["nombreRecurso"] = u.NombreRecurso
 	}
+
+	if u.CantidadDisponible > 0 {
+		registro["cantidadDisponible"] = u.CantidadDisponible
+	}
+	
 	if resultado.CantidadExistente + u.CantidadExistente < 0 {
 		return false, nil
 	}
@@ -48,6 +53,7 @@ func ActualizoRecurso(u recursomodels.Recurso) (bool, error) {
 	if len(u.TipoID) > 0 {
 		registro["tipoid"] = u.TipoID
 	}
+
 
 	updtString := bson.M{
 		"$set": registro,

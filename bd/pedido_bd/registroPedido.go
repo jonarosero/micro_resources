@@ -17,14 +17,15 @@ func RegistroPedido(r pedidomodels.Pedido) (string, error) {
 	col := db.Collection("pedido")
 
 	registro := pedidomodels.Pedido{
-		ID:              primitive.NewObjectID(),
-		FechaPedido:     r.FechaPedido,
-		IdProyecto:      r.IdProyecto,
-		InformePedido:   r.InformePedido,
-		Estado:          true,
-		Recurso:         r.Recurso,
-		Usuario:         r.Usuario,
-		TiempoPedido:    r.TiempoPedido,
+		ID:            primitive.NewObjectID(),
+		FechaPedido:   r.FechaPedido,
+		IdProyecto:    r.IdProyecto,
+		InformePedido: r.InformePedido,
+		Estado:        true,
+		Recurso:       r.Recurso,
+		Usuario:       r.Usuario,
+		TiempoPedido:  r.TiempoPedido,
+		Mensaje:       r.Mensaje,
 	}
 
 	if len(r.Recurso) < 0 {
