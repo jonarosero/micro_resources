@@ -33,17 +33,13 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	}
 
 	if resultado.CantidadDisponible == 0 {
-		return "", error, "El recurso no se encuentra disponible"
-	}
-
-	if recursoPedido.CantidadPedida > resultado.CantidadDisponible {
-		return "", error, "No se dispone de tantos recursos"
+		return "error cantidad disponible", error, "El recurso no se encuentra disponible"
 	}
 
 	calc := resultado.CantidadDisponible - recursoPedido.CantidadPedida
 
 	if calc < 0 {
-		return "", error, "No existen tantos recursos"
+		return "mucho pide el cuerpo", error, "No existen tantos recursos"
 
 	}
 
@@ -52,7 +48,7 @@ func ChequeoExistenRecursos(recursoPedido pedidomodels.RecursoPedido) (string, e
 	_,errorActu := recursobd.ActualizoRecurso(resultado)
 
 	if errorActu != nil {
-		return "", errorActu, "Hubo un error al actualizar los recursos"
+		return "no esta actualizando", errorActu, "Hubo un error al actualizar los recursos"
 	}
 	
 

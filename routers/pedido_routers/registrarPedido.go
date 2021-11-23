@@ -52,7 +52,7 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 		log.Println(recurso.NombreRecurso)
 	}
 
-
+	log.Println(t)
 	
 
 	status, err := pedidobd.RegistroPedido(t)
