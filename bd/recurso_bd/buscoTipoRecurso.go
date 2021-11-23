@@ -16,7 +16,7 @@ func BuscoTipoRecurso(nombre string) (recursomodels.TipoRecurso, error) {
 	db := bd.MongoCN.Database("Recursos")
 	col := db.Collection("tipoRecurso")
 
-	condicion := bson.M{"nombreTipo":nombre}
+	condicion := bson.M{"nombreTipo":bson.M{"$regex": `(?i)` + nombre}}
 	
 	var resultado recursomodels.TipoRecurso
 

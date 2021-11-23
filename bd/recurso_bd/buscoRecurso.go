@@ -22,7 +22,7 @@ func BuscoRecurso(nombre string) (recursomodels.DevuelvoRecurso, error) {
 
 	var result recursomodels.DevuelvoRecurso
 
-	errRecurso := col.FindOne(ctx, bson.M{"nombreRecurso": nombre}).Decode(&resultadoRecurso)
+	errRecurso := col.FindOne(ctx, bson.M{"nombreRecurso": bson.M{"$regex": `(?i)` + nombre}}).Decode(&resultadoRecurso)
 	if errRecurso != nil {
 		return result, errRecurso
 	}
