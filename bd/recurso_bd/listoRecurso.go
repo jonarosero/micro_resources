@@ -40,7 +40,7 @@ func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
 		colTipo := db.Collection("tipoRecurso")
 		var tipo recursomodels.TipoRecurso
 
-		errTipo := colTipo.FindOne(ctx, bson.M{"_id": recurso.ID}).Decode(&tipo)
+		errTipo := colTipo.FindOne(ctx, bson.M{"_id": recurso.TipoID}).Decode(&tipo)
 
 		if errTipo != nil {
 			return results, false
