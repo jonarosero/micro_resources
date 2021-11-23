@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func RegistroPedido(r pedidomodels.Pedido) (string, bool, error) {
+func RegistroPedido(r pedidomodels.Pedido) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 
@@ -29,21 +29,21 @@ func RegistroPedido(r pedidomodels.Pedido) (string, bool, error) {
 
 	if len(r.Recurso) < 0 {
 		r.Estado = false
-		return "No ha solicitado recursos", r.Estado, nil
+		return "No ha solicitado recursos", nil
 	}
 
 	if len(r.InformePedido) < 0 {
 		r.Estado = false
-		return "Debe ingresar un informe para realizar el pedido", r.Estado, nil
+		return "Debe ingresar un informe para realizar el pedido", nil
 	}
 
 	result, err := col.InsertOne(ctx, registro)
 
 	if err != nil {
-		return "", false, err
+		return "", err
 	}
 
 	objID, _ := result.InsertedID.(primitive.ObjectID)
 
-	return objID.String(), r.Estado, nil
+	return objID.String(), nil
 }

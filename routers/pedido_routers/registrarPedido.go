@@ -45,14 +45,9 @@ func RegistroPedido(w http.ResponseWriter, r *http.Request) {
 
 	t.FechaPedido = time.Now()
 
-	_, status, err := pedidobd.RegistroPedido(t)
+	status, err := pedidobd.RegistroPedido(t)
 	if err != nil {
-		http.Error(w, "Ocurrio un error al intentar registrar el pedido "+err.Error(), 400)
-		return
-	}
-
-	if !status {
-		http.Error(w, "No se logro insertar el registro del pedido "+err.Error(), 400)
+		http.Error(w, "Ocurrio un error al intentar registrar el pedido: "+ status + " "+err.Error(), 400)
 		return
 	}
 
