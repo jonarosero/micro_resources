@@ -20,7 +20,6 @@ func ListoRecursos() ([]*recursomodels.DevuelvoRecurso, bool) {
 
 	condiciones := make([]bson.M,0)
 
-	condiciones = append(condiciones, bson.M{})
 	condiciones = append(condiciones, bson.M{
 		"lookup": bson.M{
 			"from":         "tipoRecurso",
