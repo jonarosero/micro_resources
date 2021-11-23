@@ -22,8 +22,8 @@ func ChequeoExistenRecursos(id primitive.ObjectID, cantidadPedida int) (string, 
 
 	error := col.FindOne(ctx, bson.M{"_id":id}).Decode(&resultado)
 
-	if error != nil {
-		return nombre, error, "No se encuentra el recurso"
+	if error == nil {
+		//return nombre, error, "No se encuentra el recurso"
 	}
 
 	if resultado.CantidadDisponible == 0 {
