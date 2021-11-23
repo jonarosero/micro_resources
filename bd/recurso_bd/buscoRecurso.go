@@ -9,32 +9,38 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func BuscoRecurso(nombre string) ([]recursomodels.DevuelvoRecurso, error) {
+func BuscoRecurso(nombre string) (recursomodels.DevuelvoRecurso, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
 	defer cancel()
 
 	db := bd.MongoCN.Database("Recursos")
 	col := db.Collection("recurso")
+	colTipo := db.Collection("tipoRecurso")
 
-	condiciones := make([]bson.M,0)
-	condiciones = append(condiciones, bson.M{"$match": bson.M{"nombreRecurso": nombre}})
-	condiciones = append(condiciones, bson.M{
-		"lookup": bson.M{
-			"from":         "tipoRecurso",
-			"localField":   "tipoid",
-			"foreignField": "_id",
-			"as":           "tipo",
-		}})
-	condiciones = append(condiciones, bson.M{"$unwind": "$asignatura"})
+	var resultadoRecurso recursomodels.Recurso
+	var resultadoTipo recursomodels.TipoRecurso
 
-	cursor, err := col.Aggregate(ctx, condiciones)
+	var result recursomodels.DevuelvoRecurso
 
-	var result []recursomodels.DevuelvoRecurso
-
-	err = cursor.All(ctx, &result)
-
-	if err != nil{
-		return result, err
+	errRecurso := col.FindOne(ctx, bson.M{"nombreRecurso": nombre}).Decode(&resultadoRecurso)
+	if errRecurso != nil {
+		return result, errRecurso
 	}
-	return result, err
+
+	errTipo := colTipo.FindOne(ctx, bson.M{"_id":resultadoRecurso.TipoID}).Decode(&resultadoTipo)
+
+	if errTipo != nil {
+		return result, errTipo
+	}
+
+	result.ID = resultadoRecurso.ID
+	result.NombreRecurso = resultadoRecurso.NombreRecurso
+	result.Imagen = resultadoRecurso.Imagen
+	result.CantidadDisponible = resultadoRecurso.CantidadDisponible
+	result.CantidadExistente = resultadoRecurso.CantidadExistente
+	result.TipoRecurso.ID = resultadoTipo.ID
+	result.TipoRecurso.NombreTipo = resultadoTipo.NombreTipo
+	result.TipoRecurso.DescripcionTipo = resultadoTipo.DescripcionTipo
+
+	return result, nil
 }
