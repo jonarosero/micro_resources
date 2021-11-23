@@ -37,9 +37,9 @@ func ActualizoRecurso(u recursomodels.Recurso) (bool, error) {
 	registro["cantidadExistente"] = resultado.CantidadExistente + u.CantidadExistente
 
 	if resultado.CantidadDisponible + u.CantidadExistente < 0 {
-		registro["cantidadDisponible"] = registro["cantidadExistente"]
+		registro["cantidadDisponible"] = resultado.CantidadExistente + u.CantidadExistente
 	}
-	
+
 	registro["cantidadDisponible"] = resultado.CantidadDisponible + u.CantidadExistente
 
 	if len(u.Imagen) > 0 {
