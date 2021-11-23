@@ -37,11 +37,11 @@ func ActualizoRecurso(u recursomodels.Recurso) (bool, error) {
 	registro["cantidadExistente"] = resultado.CantidadExistente + u.CantidadExistente
 
 	if resultado.CantidadDisponible + u.CantidadExistente < 0 {
-		registro["cantidadDisponible"] = resultado.CantidadExistente + u.CantidadExistente
+		registro["cantidadDisponible"] = registro["cantidadExistente"]
+	} else {
+		registro["cantidadDisponible"] = resultado.CantidadDisponible + u.CantidadExistente
 	}
-
-	registro["cantidadDisponible"] = resultado.CantidadDisponible + u.CantidadExistente
-
+	
 	if len(u.Imagen) > 0 {
 		registro["imagen"] = u.Imagen
 	}
