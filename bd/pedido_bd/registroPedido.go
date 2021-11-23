@@ -19,18 +19,12 @@ func RegistroPedido(r pedidomodels.Pedido) (string, bool, error) {
 	registro := pedidomodels.Pedido{
 		ID:              primitive.NewObjectID(),
 		FechaPedido:     r.FechaPedido,
-		FechaDevolucion: r.FechaDevolucion,
 		IdProyecto:      r.IdProyecto,
 		InformePedido:   r.InformePedido,
 		Estado:          true,
 		Recurso:         r.Recurso,
 		Usuario:         r.Usuario,
 		TiempoPedido:    r.TiempoPedido,
-	}
-
-	if r.FechaDevolucion.Before(r.FechaPedido) {
-		r.Estado = false
-		return "La fecha de devolución debe ser mayor a la fecha de pedido", r.Estado, nil
 	}
 
 	if len(r.Recurso) < 0 {
